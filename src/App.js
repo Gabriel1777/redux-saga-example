@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import {Provider} from 'react-redux';
+import Example from './views/example';
+import React, {Component} from 'react';
+import createSagaMiddleware from 'redux-saga';
+import {IndexSagas} from './redux/index-sagas';
+import {IndexReducer} from './redux/index-reducer';
+import {applyMiddleware, compose, createStore} from 'redux';
 
-function App() {
+
+//creamos la instancia del middleware de redux-saga
+const sagaMiddleware = createSagaMiddleware();
+const composeSetup = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(
+    //Creamos la tienda de la aplicación utilizando el combineReducers para 
+    //Convertir todos los estados en uno solo
+    IndexReducer,
+    //agregamos el middleware de redux-saga a la tienda
+    composeSetup(applyMiddleware(sagaMiddleware)),
+);
+
+
+//Ejecutamos el middleware para que se haga efectivo
+sagaMiddleware.run(IndexSagas);
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {/* Encerramos la aplicación */}
+      <Provider store={store}>
+        <Example/>
+      </Provider>
     </div>
   );
-}
+};
 
 export default App;
